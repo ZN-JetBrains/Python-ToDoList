@@ -50,6 +50,7 @@ def print_today_tasks():
     date = datetime.today()
     print(date.strftime("\nToday %#d %b:"))
     print_tasks(date)
+    print()
 
 
 def print_week_tasks():
@@ -58,6 +59,7 @@ def print_week_tasks():
         current_date = today + timedelta(days=day)
         print(current_date.strftime("\n%A %#d %b:"))
         print_tasks(current_date)
+    print()
 
 
 def print_tasks(date):
@@ -68,7 +70,6 @@ def print_tasks(date):
     else:
         for index, row in enumerate(tasks):
             print(f"{index + 1}. {row.task}")
-    print()
 
 
 def print_all_tasks():
@@ -78,24 +79,18 @@ def print_all_tasks():
         print("Nothing to do!\n")
     else:
         print("\nAll tasks:")
-        for index, row in enumerate(rows):
-            date = datetime.strptime(str(row.deadline), "%Y-%m-%d").date()
-            date = date.strftime("%#d %b")
-            print(f"{index + 1}. {row.task}. {date}")
-    print()
+        print_rows(rows)
+        print()
 
 
 def print_missed_tasks():
     print("\nMissed tasks:")
     rows = session.query(Table).filter(Table.deadline < datetime.today().date()).order_by(Table.deadline).all()
     if len(rows) == 0:
-        print("Nothing is missed!")
+        print("Nothing is missed!\n")
     else:
-        for index, row in enumerate(rows):
-            date = datetime.strptime(str(row.deadline), "%Y-%m-%d").date()
-            date = date.strftime("%#d %b")
-            print(f"{index + 1}. {row.task}. {date}")
-    print()
+        print_rows(rows)
+        print()
 
 
 def add_task():
@@ -114,18 +109,22 @@ def delete_task():
     rows = session.query(Table).order_by(Table.deadline).all()
 
     if len(rows) == 0:
-        print("Nothing to delete!\n")
+        print("\nNothing to delete!\n")
     else:
         print("\nChoose the number of the task you want to delete:")
-        for index, row in enumerate(rows):
-            date = datetime.strptime(str(row.deadline), "%Y-%m-%d").date()
-            date = date.strftime("%#d %b")
-            print(f"{index + 1}. {row.task}. {date}")
+        print_rows(rows)
     task_to_delete = int(input())
     specific_row = rows[task_to_delete - 1]
     session.delete(specific_row)
     session.commit()
     print("The task has been deleted!\n")
+
+
+def print_rows(rows):
+    for index, row in enumerate(rows):
+        date = datetime.strptime(str(row.deadline), "%Y-%m-%d").date()
+        date = date.strftime("%#d %b")
+        print(f"{index + 1}. {row.task}. {date}")
 
 
 def process_input():
