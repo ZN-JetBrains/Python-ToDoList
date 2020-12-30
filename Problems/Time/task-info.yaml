@@ -7,5 +7,8 @@ files:
     # print its time part
   learner_created: false
 feedback_link: https://hyperskill.org/learn/step/7331#comment
-status: Unchecked
+status: Solved
+feedback:
+  message: <html>Correct solution</html>
+  time: Wed, 30 Dec 2020 00:14:23 UTC
 record: -1
