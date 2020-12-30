@@ -82,6 +82,20 @@ def print_all_tasks():
             date = datetime.strptime(str(row.deadline), "%Y-%m-%d").date()
             date = date.strftime("%#d %b")
             print(f"{index + 1}. {row.task}. {date}")
+    print()
+
+
+def print_missed_tasks():
+    print("\nMissed tasks:")
+    rows = session.query(Table).filter(Table.deadline < datetime.today().date()).order_by(Table.deadline).all()
+    if len(rows) == 0:
+        print("Nothing is missed!")
+    else:
+        for index, row in enumerate(rows):
+            date = datetime.strptime(str(row.deadline), "%Y-%m-%d").date()
+            date = date.strftime("%#d %b")
+            print(f"{index + 1}. {row.task}. {date}")
+    print()
 
 
 def add_task():
@@ -96,30 +110,50 @@ def add_task():
     print("The task has been added!\n")
 
 
+def delete_task():
+    rows = session.query(Table).order_by(Table.deadline).all()
+
+    if len(rows) == 0:
+        print("Nothing to delete!\n")
+    else:
+        print("\nChoose the number of the task you want to delete:")
+        for index, row in enumerate(rows):
+            date = datetime.strptime(str(row.deadline), "%Y-%m-%d").date()
+            date = date.strftime("%#d %b")
+            print(f"{index + 1}. {row.task}. {date}")
+    task_to_delete = int(input())
+    specific_row = rows[task_to_delete - 1]
+    session.delete(specific_row)
+    session.commit()
+    print("The task has been deleted!\n")
+
+
+def process_input():
+    user_input = int(input())
+
+    if user_input == Menu.EXIT:
+        print("\nBye!")
+        return False
+    elif user_input == Menu.SHOW_TASKS_TODAY:  # Display all tasks for today
+        print_today_tasks()
+    elif user_input == Menu.SHOW_TASKS_WEEK:  # Display all tasks for this Week
+        print_week_tasks()
+    elif user_input == Menu.SHOW_TASKS_ALL:  # Display all tasks in database
+        print_all_tasks()
+    elif user_input == Menu.SHOW_TASKS_MISSED:  # Display missed tasks
+        print_missed_tasks()
+    elif user_input == Menu.ADD_TASK:  # Add a row
+        add_task()
+    elif user_input == Menu.DELETE_TASK:  # Delete task
+        delete_task()
+    return True
+
+
 def run():
-    while True:
+    is_running = True
+    while is_running:
         print_menu()
-        user_input = int(input())
-
-        if user_input == Menu.EXIT:
-            print("\nBye!")
-            break
-        elif user_input == Menu.SHOW_TASKS_TODAY:  # Display all tasks for today
-            print_today_tasks()
-        elif user_input == Menu.SHOW_TASKS_WEEK:  # Display all tasks for this Week
-            print_week_tasks()
-        elif user_input == Menu.SHOW_TASKS_ALL:  # Display all tasks in database
-            print_all_tasks()
-            print()
-        elif user_input == Menu.SHOW_TASKS_MISSED:  # Display missed tasks
-            print("\nMissed tasks:")
-            print("Nothing is missed!\n")
-        elif user_input == Menu.ADD_TASK:  # Add a row
-            add_task()
-        elif user_input == Menu.DELETE_TASK:  # Delete task
-            print("\nChoose the number of the task you want to delete:")
-
-            print("The task has been deleted!\n")
+        is_running = process_input()
 
 
 run()
