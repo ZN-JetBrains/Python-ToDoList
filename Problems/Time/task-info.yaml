@@ -1,0 +1,11 @@
+type: code
+files:
+- name: main.py
+  visible: true
+  text: |-
+    # some_date has been defined
+    # print its time part
+  learner_created: false
+feedback_link: https://hyperskill.org/learn/step/7331#comment
+status: Unchecked
+record: -1
